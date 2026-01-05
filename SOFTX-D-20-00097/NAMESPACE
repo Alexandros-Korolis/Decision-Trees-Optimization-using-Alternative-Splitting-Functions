@@ -1,0 +1,27 @@
+useDynLib(ImbTreeEntropyKaniadakis, .registration=TRUE)
+
+export(
+  ImbTreeEntropyKaniadakis,
+  ImbTreeEntropyInter,
+  ExtractRules,
+  PredictTree,
+  PrintTree,
+  PrintTreeInter,
+  EntropyCpp,
+  InformationGainCpp,
+  tapplyCpp,
+  ClassErrorLocalCpp,
+  AvoidSameClassCpp,
+  ProbPeak
+)
+
+importFrom(Rcpp, evalCpp)
+import(BBmisc)
+import(GenSA)
+import(data.tree)
+import(snow)
+import(utils)
+import(caret)
+import(shiny)
+import(RWeka)
+import(stats)
