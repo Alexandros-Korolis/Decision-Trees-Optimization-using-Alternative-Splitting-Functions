@@ -315,8 +315,7 @@ for (i in 1:length(random_index)) {
                                                     choose_cf = 0.25,
                                                     entropy_type = "Tsallis")
   
-  # choose the best parameters to train the model
-  # arrange best results (max accuracy), pick the first one with the lowest depth- highest min_split.
+  # choose the best parameters to train the model.
   best_parameter = arrange(tsallis_grid_scores$results, desc(mean_ac),sd_ac,fitted_mean_leaves,fitted_sd_leaves,desc(avg_mean_recall))[1,]
   
   
@@ -345,7 +344,7 @@ for (i in 1:length(random_index)) {
   ################################################################################
   ######################### SHARMA-TANEJA ENTROPY ################################
   ################################################################################
-  # grid search (με parallel computing)
+  # grid search 
   source("functions.R")
   st_best_grid_scores = gridsearch_two_parallel(train_data,
                                                "Class",
@@ -357,7 +356,6 @@ for (i in 1:length(random_index)) {
                                                choose_cp = 0,
                                                entropy_type = "Sharma-Taneja")
   # choose the best parameters to train the model
-  # arrange best results (max accuracy), pick the first one with the lowest depth- highest min_split.
   best_parameter = arrange(st_best_grid_scores$results, desc(mean_ac),sd_ac,fitted_mean_leaves,fitted_sd_leaves,desc(avg_mean_recall))[1,]
   
   
@@ -400,7 +398,6 @@ for (i in 1:length(random_index)) {
                                                   choose_cp = 0,
                                                   entropy_type = "Kapur")
   # choose the best parameters to train the model
-  # arrange best results (max accuracy), pick the first one with the lowest depth- highest min_split.
   best_parameter = arrange(kapur_grid_scores$results, desc(mean_ac),sd_ac,fitted_mean_leaves,fitted_sd_leaves,desc(avg_mean_recall))[1,]
   
   
@@ -443,7 +440,6 @@ for (i in 1:length(random_index)) {
                                                    choose_cf = 0.25,
                                                    entropy_type = "Kaniadakis")
   # choose the best parameters to train the model
-  # arrange best results (max accuracy), pick the first one with the lowest depth- highest min_split.
   best_parameter = arrange(kaniad_grid_scores$results, desc(mean_ac),sd_ac,fitted_mean_leaves,fitted_sd_leaves,desc(avg_mean_recall))[1,]
   
     # train/test model 
@@ -597,34 +593,34 @@ saveWorkbook(work_book, "repeated_holdout_cross_val_51_wine.xlsx", overwrite = T
 
 ################################################################################ Accuracy Analysis
 # load results data 
-results_shannon = read.xlsx("repeated_holdout_cross_val_51_wine.xlsx",
+results_shannon = read.xlsx("repeated_holdout_cross_val_50_wine.xlsx",
                             sheet = "Shannon")
 
-results_renyi = read.xlsx("repeated_holdout_cross_val_51_wine.xlsx",
+results_renyi = read.xlsx("repeated_holdout_cross_val_50_wine.xlsx",
                           sheet = "Renyi")
 
-results_sh_mit = read.xlsx("repeated_holdout_cross_val_51_wine.xlsx",
+results_sh_mit = read.xlsx("repeated_holdout_cross_val_50_wine.xlsx",
                            sheet = "Sharma_Mittal")
 
-results_sh_tan = read.xlsx("repeated_holdout_cross_val_51_wine.xlsx",
+results_sh_tan = read.xlsx("repeated_holdout_cross_val_50_wine.xlsx",
                            sheet = "Sharma_Taneja")
 
-results_tsallis = read.xlsx("repeated_holdout_cross_val_51_wine.xlsx",
+results_tsallis = read.xlsx("repeated_holdout_cross_val_50_wine.xlsx",
                             sheet = "Tsallis")
 
-results_kapur = read.xlsx("repeated_holdout_cross_val_51_wine.xlsx",
+results_kapur = read.xlsx("repeated_holdout_cross_val_50_wine.xlsx",
                           sheet = "Kapur")
 
-results_kaniad = read.xlsx("repeated_holdout_cross_val_51_wine.xlsx",
+results_kaniad = read.xlsx("repeated_holdout_cross_val_50_wine.xlsx",
                            sheet = "Kaniadakis")
 # Vertical side by side box plots for accuracy 
 df_accuracy = data.frame(results_shannon$accuracy,results_renyi$accuracy,results_sh_mit$accuracy,
                          results_tsallis$accuracy,results_sh_tan$accuracy,results_kapur$accuracy,
                          results_kaniad$accuracy)
 colnames(df_accuracy) = c("Shannon","Renyi","Sharma-Mittal","Tsallis","Sharma-Taneja","Kapur","Kaniadakis")
-df_accuracy_long = df_accuracy %>% pivot_longer(cols = everything(),names_to = "Entropy", values_to = "Accuracy")
-ggplot(data = df_accuracy_long, mapping = aes(x = Entropy,y = Accuracy, fill = Entropy))+
-  geom_boxplot()+theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+ggtitle("Accuracy")
+df_accuracy_long = df_accuracy %>% pivot_longer(cols = everything(),names_to = "Εντροπία", values_to = "Ακρίβεια")
+ggplot(data = df_accuracy_long, mapping = aes(x = Εντροπία,y = Ακρίβεια, fill = Εντροπία))+
+  geom_boxplot()+theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))+ggtitle("Ακρίβεια")
 
 summary(results_shannon)
 summary(results_renyi)
@@ -636,38 +632,38 @@ summary(results_kaniad)
 
 # Paired t-tests
 num_test = 21
-# Kapur vs Shannon (Reject H0, d = 0.5774)
+
 t.test(results_kapur$accuracy,results_shannon$accuracy,paired = TRUE)$p.value< (0.05/num_test)
 d = round(mean(results_kapur$accuracy - results_shannon$accuracy)/sd(results_kapur$accuracy - results_shannon$accuracy),2)
-# Kaniadakis vs Shannon (Reject H0, d = 0.6111)
+
 t.test(results_kaniad$accuracy,results_shannon$accuracy,paired = TRUE)$p.value< (0.05/num_test) 
 d = round(mean(results_kaniad$accuracy - results_shannon$accuracy)/sd(results_kaniad$accuracy - results_shannon$accuracy),2)
-# Renyi vs Shannon (Fail to reject H0, d = 0.4126)
+
 t.test(results_renyi$accuracy,results_shannon$accuracy,paired = TRUE)$p.value< (0.05/num_test) 
 d = mean(results_renyi$accuracy - results_shannon$accuracy)/sd(results_renyi$accuracy - results_shannon$accuracy)
-# Sharma-Mittal vs Shannon (Reject H0, d = 0.6245)
+
 t.test(results_sh_mit$accuracy,results_shannon$accuracy,paired = TRUE)$p.value< (0.05/num_test) 
 d = mean(results_sh_mit$accuracy - results_shannon$accuracy)/sd(results_sh_mit$accuracy - results_shannon$accuracy)
-# Sharma-Taneja vs Shannon (Reject H0, d = 0.8441)
+
 t.test(results_sh_tan$accuracy,results_shannon$accuracy,paired = TRUE)$p.value< (0.05/num_test) 
 d = mean(results_sh_tan$accuracy - results_shannon$accuracy)/sd(results_sh_tan$accuracy - results_shannon$accuracy)
-# Tsallis vs Shannon (Reject H0, d = 0.5718)
+
 t.test(results_tsallis$accuracy,results_shannon$accuracy,paired = TRUE)$p.value< (0.05/num_test) 
 d = mean(results_tsallis$accuracy - results_shannon$accuracy)/sd(results_tsallis$accuracy - results_shannon$accuracy)
 
-# Kaniadakis vs Sharma-Mittal (Fail to reject, d = 0.1661)
+
 t.test(results_kaniad$accuracy,results_sh_mit$accuracy,paired = TRUE)$p.value< (0.05/num_test) 
 d = mean(results_kaniad$accuracy - results_sh_mit$accuracy)/sd(results_kaniad$accuracy - results_sh_mit$accuracy)
-# Kaniadakis vs Sharma-Taneja (Fail to reject, d = 0.4165)
+
 t.test(results_kaniad$accuracy,results_sh_tan$accuracy,paired = TRUE)$p.value< (0.05/num_test)
 d = mean(results_kaniad$accuracy - results_sh_tan$accuracy)/sd(results_kaniad$accuracy - results_sh_tan$accuracy)
-# Kaniadakis vs Tsallis (Fail to reject, d = 0.069)
+
 t.test(results_kaniad$accuracy,results_tsallis$accuracy,paired = TRUE)$p.value< (0.05/num_test) 
 d = mean(results_kaniad$accuracy - results_tsallis$accuracy)/sd(results_kaniad$accuracy - results_tsallis$accuracy)
-# Kaniadakis vs Kapur (Fail to reject, d = 0.12)
+
 t.test(results_kaniad$accuracy,results_kapur$accuracy,paired = TRUE)$p.value< (0.05/num_test)
 d = mean(results_kaniad$accuracy - results_kapur$accuracy)/sd(results_kaniad$accuracy - results_kapur$accuracy)
-# Kaniadakis vs Renyi (Fail to reject, d = 0.0561)
+
 t.test(results_kaniad$accuracy,results_renyi$accuracy,paired = TRUE)$p.value< (0.05/num_test)
 d = mean(results_kaniad$accuracy - results_renyi$accuracy)/sd(results_kaniad$accuracy - results_renyi$accuracy)
 
@@ -700,9 +696,9 @@ ggplot(entropy, aes(x = Measure, y = Mean)) +
     aes(ymin = Mean - SD, ymax = Mean + SD),
     width = 0.2
   ) +
-  ylab("Accuracy") +
+  ylab("Ακρίβεια") +
   xlab("Εντροπία") +
-  ggtitle("Μέση Τιμή Accuracy ± SD Accuracy") +
+  ggtitle("Μέση Τιμή Ακρίβειας ± SD Ακρίβειας") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 

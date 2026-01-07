@@ -1,13 +1,3 @@
-purity = function(shannon_tree) {
-  p = c()
-  cnt = c()
-  for (l in shannon_tree$leaves) {
-    p = c(p,max(l$Probability))
-    cnt = c(cnt,l$Count)
-  }
-  #return(mean(p))
-  return(sum(p*cnt)/sum(cnt))
-}
 
 gridsearch_one_parallel = function(labeled_train_data,
                                    target,
