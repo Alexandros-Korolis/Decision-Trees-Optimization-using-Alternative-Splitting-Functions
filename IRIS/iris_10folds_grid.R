@@ -682,7 +682,16 @@ entropy = data.frame(Measure = c("Shannon", "Renyi", "Sharma-Mittal","Tsallis", 
                                     mean(results_kaniad$accuracy)),3),
                      SD   = round(c(sd(results_shannon$accuracy), sd(results_renyi$accuracy), sd(results_sh_mit$accuracy),
                                     sd(results_tsallis$accuracy), sd(results_sh_tan$accuracy), sd(results_kapur$accuracy), 
-                                    sd(results_kaniad$accuracy)),3))
+                                    sd(results_kaniad$accuracy)),3),
+                     Median   = round(c(median(results_shannon$accuracy), median(results_renyi$accuracy), median(results_sh_mit$accuracy),
+                                        median(results_tsallis$accuracy), median(results_sh_tan$accuracy), median(results_kapur$accuracy), 
+                                        median(results_kaniad$accuracy)),3),
+                     Min   = round(c(min(results_shannon$accuracy), min(results_renyi$accuracy), min(results_sh_mit$accuracy),
+                                     min(results_tsallis$accuracy), min(results_sh_tan$accuracy), min(results_kapur$accuracy), 
+                                     min(results_kaniad$accuracy)),3),
+                     Max   = round(c(max(results_shannon$accuracy), max(results_renyi$accuracy), max(results_sh_mit$accuracy),
+                                     max(results_tsallis$accuracy), max(results_sh_tan$accuracy), max(results_kapur$accuracy), 
+                                     max(results_kaniad$accuracy)),3))
 
 ggplot(entropy, aes(x = Measure, y = Mean)) +
   geom_point(size = 3) +
@@ -690,13 +699,13 @@ ggplot(entropy, aes(x = Measure, y = Mean)) +
     aes(ymin = Mean - SD, ymax = Mean + SD),
     width = 0.2
   ) +
-  ylab("Accuracy") +
+  ylab("Ακρίβεια") +
   xlab("Εντροπία") +
-  ggtitle("Μέση Τιμή Ακρίβειας ± SD Ακρίβειας") +
+  ggtitle("Μέση Τιμή Ακρίβειας ± Τυπική Απόκλιση Ακρίβειας") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-colnames(entropy) = c("Εντροπία", "Μέση Τιμή", "Τυπική Απόκλιση")
+colnames(entropy) = c("Εντροπία", "Μέση Τιμή", "Τυπική Απόκλιση","Διάμεσος","Ελάχιστη Τιμή","Μέγιστη Τιμή")
 entropy %>% gt()
 
 # Complexity (depth)
